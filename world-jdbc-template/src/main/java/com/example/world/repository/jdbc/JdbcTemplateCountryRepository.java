@@ -8,6 +8,9 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.world.entity.Country;
 import com.example.world.repository.CountryRepository;
@@ -18,6 +21,11 @@ public class JdbcTemplateCountryRepository implements CountryRepository {
     		SELECT CODE,NAME,POPULATION,SURFACEAREA,CONTINENT
     		FROM COUNTRY
     		WHERE CODE=:code 
+    		""";
+    private static final String SELECT_COUNTRIES_BY_PAGE = """ 
+    		SELECT CODE,NAME,POPULATION,SURFACEAREA,CONTINENT
+    		FROM COUNTRY
+    		LIMIT :offset,:size 
     		""";
 	private final NamedParameterJdbcTemplate jdbcTemplate;
 	private final RowMapper<Country> COUNTRY_ROW_MAPPER= (resultSet, index) -> {
@@ -47,23 +55,33 @@ public class JdbcTemplateCountryRepository implements CountryRepository {
 
 	@Override
 	public List<Country> findAll(int pageNo, int pageSize) {
-		// TODO Auto-generated method stub
-		return null;
+		return jdbcTemplate.query(
+				SELECT_COUNTRIES_BY_PAGE,
+				Map.of(
+				   "offset", pageNo*pageSize,
+				   "size" , pageSize
+				)
+				,
+				COUNTRY_ROW_MAPPER
+			);
 	}
 
 	@Override
+	@Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.NEVER, readOnly = true )
 	public void insert(Country country) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
+	@Transactional
 	public void update(Country country) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
+	@Transactional
 	public Country deleteOneByCode(String code) {
 		// TODO Auto-generated method stub
 		return null;
