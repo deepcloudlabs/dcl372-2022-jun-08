@@ -28,6 +28,7 @@ public class WorldJdbcTemplateApplication implements ApplicationRunner {
 		                 .stream()
 		                 .map(Country::getName)
 		                 .forEach(System.out::println);
+		// countryRepository.deleteOneByCode("TUR");
 	}
 
 }

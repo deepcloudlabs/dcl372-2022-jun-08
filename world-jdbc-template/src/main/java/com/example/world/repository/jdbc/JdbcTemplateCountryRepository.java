@@ -8,8 +8,6 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.world.entity.Country;
@@ -27,6 +25,28 @@ public class JdbcTemplateCountryRepository implements CountryRepository {
     		FROM COUNTRY
     		LIMIT :offset,:size 
     		""";
+	private static final String INSERT_INTO_COUNTRY = """
+			INSERT INTO COUNTRY (CODE,CONTINENT,NAME,POPULATION,SURFACEAREA)
+			VALUES (:code,:continent,:name,:population,:surfaceArea)
+			""";
+	private static final String UPDATE_COUNTRY = """
+			UPDATE COUNTRY 
+			SET NAME=:name, POPULATION=:population, SURFACEAREA=:surfaceArea
+			WHERE CODE=:code
+			""";
+	private static final String DELETE_COUNTRY_BY_CODE = """
+			DELETE FROM COUNTRY
+			WHERE CODE=:code
+			""";
+	private static final String DELETE_CITY_BY_COUNTRY_CODE = """
+			DELETE FROM CITY
+			WHERE COUNTRYCODE=:code
+			""";
+	private static final String DELETE_COUNTRY_LANGUAGE_BY_COUNTRY_CODE = """
+			DELETE FROM COUNTRYLANGUAGE
+			WHERE COUNTRYCODE=:code
+			""";
+
 	private final NamedParameterJdbcTemplate jdbcTemplate;
 	private final RowMapper<Country> COUNTRY_ROW_MAPPER= (resultSet, index) -> {
 		var country = new Country();
@@ -67,24 +87,44 @@ public class JdbcTemplateCountryRepository implements CountryRepository {
 	}
 
 	@Override
-	@Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.NEVER, readOnly = true )
+	@Transactional
 	public void insert(Country country) {
-		// TODO Auto-generated method stub
-
+		jdbcTemplate.update(INSERT_INTO_COUNTRY, 
+		  Map.of(
+			"code", country.getCode(),
+			"name", country.getName(),
+			"continent", country.getContinent(),
+			"population", country.getPopulation(),
+			"surfaceArea", country.getSurfaceArea()
+		  )
+		);
 	}
 
 	@Override
 	@Transactional
 	public void update(Country country) {
-		// TODO Auto-generated method stub
-
+		jdbcTemplate.update(UPDATE_COUNTRY, 
+				  Map.of(
+					"code", country.getCode(),
+					"name", country.getName(),
+					"population", country.getPopulation(),
+					"surfaceArea", country.getSurfaceArea()
+				  )
+				);
 	}
 
 	@Override
 	@Transactional
 	public Country deleteOneByCode(String code) {
-		// TODO Auto-generated method stub
-		return null;
+		final Optional<Country> country = findOneByCode(code);
+		if (country.isPresent()) {
+			jdbcTemplate.update(DELETE_CITY_BY_COUNTRY_CODE, Map.of("code",code));
+			jdbcTemplate.update(DELETE_COUNTRY_LANGUAGE_BY_COUNTRY_CODE, Map.of("code",code));
+			final int numOfRemoved = jdbcTemplate.update(DELETE_COUNTRY_BY_CODE, Map.of("code",code));
+			if (numOfRemoved > 0) {
+				return country.get();
+			}
+		}
+		throw new IllegalArgumentException("Cannot find the country to delete");
 	}
-
 }

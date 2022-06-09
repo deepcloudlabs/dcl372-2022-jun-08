@@ -6,6 +6,7 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.NamedAttributeNode;
@@ -19,11 +20,12 @@ import javax.persistence.OneToOne;
 
 import lombok.Data;
 
+@SuppressWarnings("serial")
 @Entity
 @NamedQueries({ 
   @NamedQuery(
         name = "AllFromCountry", 
-        query = "select c from Country c"
+        query = "select c from Country c" // JPQL
   ),
   @NamedQuery(
         name = "ByContinentFromCountry", 
@@ -66,6 +68,7 @@ import lombok.Data;
         ) 
   ) 
 })
+// not required since table name is the same with entity class name: @Table(name="country")
 @Data
 public class Country implements Serializable {
  @Id
@@ -77,10 +80,10 @@ public class Country implements Serializable {
  private String continent;
 
  @JoinColumn(name = "capital", nullable = false, updatable = false, insertable = false)
- @OneToOne(cascade={CascadeType.MERGE})
+ @OneToOne(cascade={CascadeType.MERGE},fetch = FetchType.LAZY)
  private City capital;
 
- @OneToMany(mappedBy = "country",orphanRemoval=true)
+ @OneToMany(mappedBy = "country",orphanRemoval=true,fetch = FetchType.LAZY)
  private Set<City> cities;
 
  @OneToMany(mappedBy = "country",orphanRemoval=true)
