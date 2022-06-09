@@ -5,6 +5,7 @@ import java.util.List;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,6 +33,7 @@ public class LotteryRestController {
 
 	// http://localhost:8100/numbers?column=10
 	@GetMapping(params="column")
+	@Cacheable(value = "numbers", key = "#column")	
 	public List<List<Integer>> getLotteryNumbers(@RequestParam @Min(5) @Max(25) int column){
 		return lotteryService.draw(column);	
 	}
