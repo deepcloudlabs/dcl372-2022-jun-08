@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.annotation.RequestScope;
 
+import com.example.lottery.aspect.Profiled;
 import com.example.lottery.service.LotteryService;
 
 @RestController
@@ -20,11 +21,13 @@ import com.example.lottery.service.LotteryService;
 @RequestMapping("/numbers")
 @CrossOrigin
 @Validated
+@Profiled
 public class LotteryRestController {
 	private final LotteryService lotteryService;
 	
 	public LotteryRestController(LotteryService lotteryService) {
 		this.lotteryService = lotteryService;
+		System.err.println(lotteryService.getClass());
 	}
 
 	// http://localhost:8100/numbers?column=10

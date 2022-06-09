@@ -30,6 +30,7 @@ public class StandardLotteryService implements LotteryService {
 		this.lotteryMax = lotteryMax;
 		this.lotterySize = lotterySize;
 		this.randomNumberServices = randomNumberServices;
+		System.err.println(randomNumberService.getClass());
 	}
 
 	
