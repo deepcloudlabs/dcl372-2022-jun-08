@@ -18,6 +18,8 @@ import javax.persistence.NamedSubgraph;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
+import org.hibernate.annotations.DynamicUpdate;
+
 import lombok.Data;
 
 @SuppressWarnings("serial")
@@ -70,6 +72,7 @@ import lombok.Data;
 })
 // not required since table name is the same with entity class name: @Table(name="country")
 @Data
+@DynamicUpdate
 public class Country implements Serializable {
  @Id
  private String code;
