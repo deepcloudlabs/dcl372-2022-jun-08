@@ -11,7 +11,7 @@ import javax.validation.constraints.Pattern;
 
 @Target({ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
-@Pattern(regexp = "^[A-Z]{3}$")
+@Pattern(regexp = "^[A-Z]{3}$",message = "{validation.iso3}")
 @Constraint(validatedBy = {})
 public @interface ISO3 {
 	   String message() default "{validation.strongPassword1}";

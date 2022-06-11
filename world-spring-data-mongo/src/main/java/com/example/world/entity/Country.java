@@ -19,10 +19,10 @@ public class Country {
  @ISO3
  private String code;
  private String name;
- @PositiveOrZero
+ @PositiveOrZero(message = "{validation.population}")
  private int population;
  @Field(name = "surfacearea")
- @PositiveOrZero
+ @PositiveOrZero(message = "{validation.area}")
  private double surfaceArea;
  private String continent;
  private List<City> cities;

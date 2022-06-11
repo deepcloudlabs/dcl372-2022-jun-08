@@ -24,6 +24,9 @@ import com.example.validation.ISO3;
 import com.example.world.entity.Country;
 import com.example.world.repository.CountryRepository;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
 // REST API -> Integration
 // i. resource-oriented: resource -> Country      -> countries
 //    rest over http ->  create -> http post      -> request body
@@ -50,6 +53,8 @@ public class WorldRestController {
 	}
 
 	// http://localhost:6060/world/api/v1/countries/USA
+	@Operation(summary = "Get country by code", description = "Get country by country code")
+	@SecurityRequirement(name = "Bearer Authentication")
 	@GetMapping("/{code}")
 	public Country getCountryByCode(@PathVariable @ISO3 String code) {
 		return countryRepository.findById(code)
@@ -57,6 +62,8 @@ public class WorldRestController {
 	}
 	
 	// http://localhost:6060/world/api/v1/countries?page=0&size=25
+	@Operation(summary = "Get countries by page", description = "Get countries by pagination")
+	@SecurityRequirement(name = "Bearer Authentication")
 	@GetMapping(params= {"page", "size"})
 	public List<Country> getCountriesByPage(
 			@RequestParam @PositiveOrZero
@@ -66,16 +73,22 @@ public class WorldRestController {
 		return countryRepository.findAll(PageRequest.of(page, size)).getContent();
 	}
 	
+	@Operation(summary = "Create country", description = "Create country")
+	@SecurityRequirement(name = "Bearer Authentication")
 	@PostMapping
 	public Country addCountry(@RequestBody @Validated Country country) {
 		return countryRepository.insert(country);
 	}
 	
+	@Operation(summary = "Update country by code", description = "Update country")
+	@SecurityRequirement(name = "Bearer Authentication")
 	@PutMapping("/{code}")
 	public Country updateCountry(@PathVariable @ISO3 String code, @RequestBody @Validated Country country) {
 		return countryRepository.save(country);
 	}
 	
+	@Operation(summary = "Delete country by code", description = "Destroy country")
+	@SecurityRequirement(name = "Bearer Authentication")
 	@DeleteMapping("/{code}")
 	public Country removeCountryByCode(@PathVariable @ISO3 String code) {
 		var country = countryRepository.findById(code)

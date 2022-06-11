@@ -7,7 +7,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import com.example.world.entity.Country;
 import com.example.world.repository.CountryRepository;
+// Bean Validation -> Internationalization (i18n) : ValidationMessages_lang.properties
+//                                                  lang: tr,fr,en,uk,us,...
+// -Duser.language=tr -Duser.country=TR
 
+// curl -X POST "http://localhost:6060/world/api/v1/login" -d "{\"username\": \"jack\", \"password\": \"secret\"}" -H "Content-Type: application/json"
+// curl -X GET "http://localhost:6060/world/api/v1/countries/ZXY" -H "Authorization: Bearer <token>" -H "Accept: application/json"
 @SpringBootApplication
 public class WorldSpringDataMongoApplication implements ApplicationRunner {
 	private final CountryRepository countryRepository;
